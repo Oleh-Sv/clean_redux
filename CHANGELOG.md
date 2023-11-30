@@ -9,3 +9,7 @@
 ## 0.1.1
 
 - Improve to previous change
+
+## 0.2.0
+
+- Replace Future in waitCancel to token

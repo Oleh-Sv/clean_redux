@@ -1,6 +1,6 @@
 name: clean_redux
-description: A starting point for Dart libraries or applications.
-version: 0.1.1
+description: The package offers a structured way to implemet clean architecture with redux pattern
+version: 0.2.0
 repository: https://github.com/Oleh-Sv/clean_redux
 
 environment:

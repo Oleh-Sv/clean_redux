@@ -35,19 +35,47 @@ abstract class UseCase<T extends Action> {
   });
 
   ///It should contain logic that can stop executing of use case after some action
-  Future<void> waitCancel(Stream<Action> actions) => Completer().future;
+  CancelToken waitCancel(Stream<Action> actions) => CancelToken();
 
-  Stream<Action> execute(T action, Stream<Action> actions, Future<void> cancel);
+  Stream<Action> execute(T action, Stream<Action> actions, CancelToken cancel);
 
   Stream<Action> call(T action, Stream<Action> actions) {
     final cancelActions = StreamController<Action>();
     final subscription = actions.listen((event) => cancelActions.add(event));
 
-    final results = execute(action, actions, waitCancel(cancelActions.stream));
+    final cancelToken = waitCancel(cancelActions.stream);
+    final results = execute(action, actions, cancelToken);
 
     return results.doOnDone(() {
+      cancelToken.clearListeners();
       subscription.cancel();
       cancelActions.close();
     });
+  }
+}
+
+class CancelToken {
+  var _canceled = false;
+  final _listeners = <void Function()>[];
+
+  void cancel() {
+    if (_canceled) return;
+
+    _canceled = true;
+    for (final listener in _listeners) {
+      listener();
+    }
+  }
+
+  void addListener(void Function() listener) {
+    _listeners.add(listener);
+  }
+
+  void removeListener(void Function() listener) {
+    _listeners.remove(listener);
+  }
+
+  void clearListeners() {
+    _listeners.clear();
   }
 }

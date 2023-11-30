@@ -30,21 +30,22 @@ class CancelableTestCase extends UseCase<LaunchAction> {
   Stream<Action> execute(
     LaunchAction action,
     Stream<Action> actions,
-    Future<void> cancel,
+    CancelToken cancel,
   ) async* {
     yield ResultAction();
   }
 
   @override
-  Future<void> waitCancel(Stream<Action> actions) {
-    return actions.any((x) {
-      if (x is CancelAction) {
+  CancelToken waitCancel(Stream<Action> actions) {
+    final token = CancelToken();
+    actions.listen((event) {
+      if (event is CancelAction) {
         onCancel();
-        return true;
-      } else {
-        return false;
+        token.cancel();
       }
     });
+
+    return token;
   }
 }
 
@@ -57,7 +58,7 @@ void main() {
       useCase = TestUseCase();
       actions = StreamController.broadcast();
       registerFallbackValue(LaunchAction());
-      registerFallbackValue(Completer<void>().future);
+      registerFallbackValue(CancelToken());
       registerFallbackValue(actions.stream);
     });
 
@@ -66,7 +67,7 @@ void main() {
         () => useCase.execute(any(), actions.stream, any()),
       ).thenAnswer((_) => Stream.value(ResultAction()));
       when(() => useCase.waitCancel(actions.stream))
-          .thenAnswer((_) => Completer().future);
+          .thenAnswer((_) => CancelToken());
 
       final endpoint = Endpoint<LaunchAction>(useCase);
 
@@ -77,15 +78,21 @@ void main() {
     });
 
     test('cancelable use case', () async {
-      when(() => useCase.waitCancel(any())).thenAnswer(
-        (invocation) => invocation.positionalArguments[0]
-            .firstWhere((element) => element is CancelAction),
-      );
+      when(() => useCase.waitCancel(any())).thenAnswer((invocation) {
+        final token = CancelToken();
+        invocation.positionalArguments[0].listen((event) {
+          if (event is CancelAction) {
+            token.cancel();
+          }
+        });
+        return token;
+      });
       when(
         () => useCase.execute(any(), actions.stream, any()),
       ).thenAnswer((invocation) async* {
         final completer = Completer();
-        invocation.positionalArguments[2].then((_) => completer.complete());
+        invocation.positionalArguments[2]
+            .addListener(() => completer.complete());
 
         yield ResultAction();
         await Future.delayed(Duration(milliseconds: 100));
