@@ -21,6 +21,33 @@ class TestUseCase extends Mock implements UseCase<LaunchAction> {
       execute(action, actions, waitCancel(actions));
 }
 
+class CancelableTestCase extends UseCase<LaunchAction> {
+  final void Function() onCancel;
+
+  CancelableTestCase(this.onCancel) : super(isAsync: true);
+
+  @override
+  Stream<Action> execute(
+    LaunchAction action,
+    Stream<Action> actions,
+    Future<void> cancel,
+  ) async* {
+    yield ResultAction();
+  }
+
+  @override
+  Future<void> waitCancel(Stream<Action> actions) {
+    return actions.any((x) {
+      if (x is CancelAction) {
+        onCancel();
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+}
+
 void main() {
   group('UseCase', () {
     late TestUseCase useCase;
@@ -87,5 +114,26 @@ void main() {
         ]),
       );
     });
+
+    test(
+      'double cancel',
+      () async {
+        var counter = 0;
+        final useCase = CancelableTestCase(() {
+          counter++;
+        });
+
+        final actions = StreamController<Action>.broadcast();
+        final results = useCase.call(LaunchAction(), actions.stream);
+
+        final q = await results.toList();
+        actions.add(CancelAction());
+
+        await Future.delayed(Duration(milliseconds: 100));
+
+        expect(q.length, 1);
+        expect(counter, 0);
+      },
+    );
   });
 }

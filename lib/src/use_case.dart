@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:clean_redux/src/action.dart';
+import 'package:rxdart/transformers.dart';
 
 ///The UseCase class is used in the context of clean architecture to
 ///represent a single use case or business logic of an application.
@@ -38,6 +39,15 @@ abstract class UseCase<T extends Action> {
 
   Stream<Action> execute(T action, Stream<Action> actions, Future<void> cancel);
 
-  Stream<Action> call(T action, Stream<Action> actions) =>
-      execute(action, actions, waitCancel(actions));
+  Stream<Action> call(T action, Stream<Action> actions) {
+    final cancelActions = StreamController<Action>();
+    final subscription = actions.listen((event) => cancelActions.add(event));
+
+    final results = execute(action, actions, waitCancel(cancelActions.stream));
+
+    return results.doOnDone(() {
+      subscription.cancel();
+      cancelActions.close();
+    });
+  }
 }
