@@ -1,3 +1,11 @@
 ## 0.0.1
 
 - Initial releae with base features.
+
+## 0.1.0
+
+- Fixed use waitCancel behaviour. Now it unsubscribes from main stream after complete of execute.
+
+## 0.1.1
+
+- Improve to previous change
