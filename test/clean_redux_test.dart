@@ -12,13 +12,35 @@ class CancelAction extends Action {}
 
 class InteruptedAction extends Action {}
 
-class TestUseCase extends Mock implements UseCase<LaunchAction> {
-  @override
-  bool get isAsync => true;
+class TestUseCase extends UseCase<LaunchAction> {
+  TestUseCase() : super(isAsync: true);
 
   @override
-  Stream<Action> call(LaunchAction action, Stream<Action> actions) =>
-      execute(action, actions, waitCancel(actions));
+  void waitCancel(Stream<Action> actions, CancelToken token) {
+    actions.listen((event) {
+      if (event is CancelAction) {
+        token.cancel();
+      }
+    });
+  }
+
+  @override
+  Stream<Action> execute(
+    LaunchAction action,
+    Stream<Action> actions,
+    CancelToken cancel,
+  ) async* {
+    final completer = Completer();
+    cancel.addListener(() => completer.complete());
+
+    yield ResultAction();
+    await Future.delayed(Duration(milliseconds: 100));
+    if (completer.isCompleted) {
+      yield InteruptedAction();
+      return;
+    }
+    yield ResultAction();
+  }
 }
 
 class CancelableTestCase extends UseCase<LaunchAction> {
@@ -36,16 +58,13 @@ class CancelableTestCase extends UseCase<LaunchAction> {
   }
 
   @override
-  CancelToken waitCancel(Stream<Action> actions) {
-    final token = CancelToken();
+  void waitCancel(Stream<Action> actions, CancelToken token) {
     actions.listen((event) {
       if (event is CancelAction) {
         onCancel();
         token.cancel();
       }
     });
-
-    return token;
   }
 }
 
@@ -66,8 +85,6 @@ void main() {
       when(
         () => useCase.execute(any(), actions.stream, any()),
       ).thenAnswer((_) => Stream.value(ResultAction()));
-      when(() => useCase.waitCancel(actions.stream))
-          .thenAnswer((_) => CancelToken());
 
       final endpoint = Endpoint<LaunchAction>(useCase);
 
@@ -78,46 +95,25 @@ void main() {
     });
 
     test('cancelable use case', () async {
-      when(() => useCase.waitCancel(any())).thenAnswer((invocation) {
-        final token = CancelToken();
-        invocation.positionalArguments[0].listen((event) {
-          if (event is CancelAction) {
-            token.cancel();
-          }
-        });
-        return token;
-      });
-      when(
-        () => useCase.execute(any(), actions.stream, any()),
-      ).thenAnswer((invocation) async* {
-        final completer = Completer();
-        invocation.positionalArguments[2]
-            .addListener(() => completer.complete());
-
-        yield ResultAction();
-        await Future.delayed(Duration(milliseconds: 100));
-        if (completer.isCompleted) {
-          yield InteruptedAction();
-          return;
-        }
-        yield ResultAction();
-      });
-
-      final endpoint = Endpoint<LaunchAction>(useCase);
-
+      final actions = StreamController<Action>.broadcast();
+      final endpoint = Endpoint<LaunchAction>(TestUseCase());
       final result = endpoint.execute(actions.stream);
+
+      await Future.delayed(Duration.zero);
       actions.add(LaunchAction());
       await Future.delayed(Duration.zero);
+
       actions.add(CancelAction());
+      await Future.delayed(Duration.zero);
       actions.add(LaunchAction());
 
       expect(
-        await result.take(4).toList(),
-        unorderedEquals([
+        result,
+        emitsInAnyOrder([
           isA<ResultAction>(),
           isA<InteruptedAction>(),
           isA<ResultAction>(),
-          isA<ResultAction>()
+          isA<ResultAction>(),
         ]),
       );
     });

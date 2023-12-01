@@ -35,7 +35,7 @@ abstract class UseCase<T extends Action> {
   });
 
   ///It should contain logic that can stop executing of use case after some action
-  CancelToken waitCancel(Stream<Action> actions) => CancelToken();
+  void waitCancel(Stream<Action> actions, CancelToken token) {}
 
   Stream<Action> execute(T action, Stream<Action> actions, CancelToken cancel);
 
@@ -43,7 +43,8 @@ abstract class UseCase<T extends Action> {
     final cancelActions = StreamController<Action>();
     final subscription = actions.listen((event) => cancelActions.add(event));
 
-    final cancelToken = waitCancel(cancelActions.stream);
+    final cancelToken = CancelToken();
+    waitCancel(cancelActions.stream, cancelToken);
     final results = execute(action, actions, cancelToken);
 
     return results.doOnDone(() {

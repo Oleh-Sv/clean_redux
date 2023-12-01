@@ -13,3 +13,7 @@
 ## 0.2.0
 
 - Replace Future in waitCancel to token
+
+## 0.3.0
+
+- New way to pass CancelToken
