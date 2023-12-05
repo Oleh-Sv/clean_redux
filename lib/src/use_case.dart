@@ -57,6 +57,8 @@ abstract class UseCase<T extends Action> {
 
 class CancelToken {
   var _canceled = false;
+  bool get canceled => _canceled;
+
   final _listeners = <void Function()>[];
 
   void cancel() {
@@ -69,6 +71,7 @@ class CancelToken {
   }
 
   void addListener(void Function() listener) {
+    assert(!_canceled);
     _listeners.add(listener);
   }
 
