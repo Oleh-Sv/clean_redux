@@ -21,3 +21,7 @@
 ## 0.3.1
 
 - Expose outside _canceled field of CancelToken
+
+## 0.3.2
+
+- Mark Action as constant

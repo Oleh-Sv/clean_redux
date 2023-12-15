@@ -1,8 +1,10 @@
 import 'package:clean_redux/src/failure.dart';
 import 'package:clean_redux/src/use_case.dart';
 
-abstract class Action extends Object {
-  final List<Object?> properties = [];
+abstract class Action {
+  const Action();
+
+  final List<Object?> properties = const [];
 
   @override
   String toString() => '''Action ${DateTime.now()}
