@@ -1,10 +1,16 @@
+enum FailureType { exception, message, debug }
+
 class Failure {
   final String code;
   final String message;
+  final FailureType type;
+  final StackTrace? stackTrace;
 
   Failure({
     required this.code,
     required this.message,
+    this.type = FailureType.exception,
+    this.stackTrace,
   });
 
   @override

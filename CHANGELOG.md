@@ -25,3 +25,7 @@
 ## 0.3.2
 
 - Mark Action as constant
+
+## 0.3.3
+
+- Extended Failure

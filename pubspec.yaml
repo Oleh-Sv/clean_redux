@@ -1,6 +1,6 @@
 name: clean_redux
 description: The package offers a structured way to implemet clean architecture with redux pattern
-version: 0.3.2
+version: 0.3.3
 repository: https://github.com/Oleh-Sv/clean_redux
 
 environment:
