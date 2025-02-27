@@ -1,6 +1,6 @@
 name: clean_redux
 description: The package offers a structured way to implemet clean architecture with redux pattern
-version: 0.3.3
+version: 0.3.4
 repository: https://github.com/Oleh-Sv/clean_redux
 
 environment:
@@ -9,7 +9,7 @@ environment:
 dependencies:
   redux: ^5.0.0
   redux_epics: ^0.15.1
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   mocktail: ^1.0.1
 
 dev_dependencies:

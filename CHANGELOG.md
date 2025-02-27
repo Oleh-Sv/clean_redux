@@ -29,3 +29,7 @@
 ## 0.3.3
 
 - Extended Failure
+
+## 0.3.4
+
+- Updated dependecies
