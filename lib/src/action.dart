@@ -6,9 +6,11 @@ abstract class Action {
 
   final List<Object?> properties = const [];
 
+  String get typeName => runtimeType.toString();
+
   @override
   String toString() => '''Action ${DateTime.now()}
-  Type: $runtimeType
+  Type: $typeName
   Data: ${properties.join('\n\t')}''';
 }
 

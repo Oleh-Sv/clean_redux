@@ -7,9 +7,13 @@ class FailureOrResult<T> {
   FailureOrResult.failure({
     required String code,
     required String message,
+    Map<String, dynamic>? details,
+    FailureType type = FailureType.exception,
   })  : failure = Failure(
           code: code,
           message: message,
+          type: type,
+          details: details,
         ),
         result = null;
 

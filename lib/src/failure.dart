@@ -5,12 +5,14 @@ class Failure {
   final String message;
   final FailureType type;
   final StackTrace? stackTrace;
+  final Map<String, dynamic>? details;
 
   Failure({
     required this.code,
     required this.message,
     this.type = FailureType.exception,
     this.stackTrace,
+    this.details,
   });
 
   @override

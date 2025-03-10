@@ -33,3 +33,19 @@
 ## 0.3.4
 
 - Updated dependecies
+
+## 0.3.5
+
+- Added details field to Failure
+
+## 0.3.6
+
+- Extended constructor for FailureOrResult
+
+## 0.3.7
+
+- Added ability to provide custom name for action type. Useful in case of logging when code minified
+
+## 0.3.8
+
+- Use typeName in toString()
