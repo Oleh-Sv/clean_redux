@@ -49,3 +49,8 @@
 ## 0.3.8
 
 - Use typeName in toString()
+
+## 0.3.9
+
+- Added stack trace to FailureOrResult constructor 
+- Added generic state for failures

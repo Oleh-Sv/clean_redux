@@ -6,11 +6,9 @@ abstract class Action {
 
   final List<Object?> properties = const [];
 
-  String get typeName => runtimeType.toString();
-
   @override
   String toString() => '''Action ${DateTime.now()}
-  Type: $typeName
+  Type: $runtimeType.toString()
   Data: ${properties.join('\n\t')}''';
 }
 
@@ -21,4 +19,8 @@ class FailedAction<T extends UseCase> extends Action {
 
   @override
   List<Object> get properties => [failure.code, failure.message];
+}
+
+class ResetFailureAction<T extends UseCase> extends Action {
+  const ResetFailureAction();
 }
