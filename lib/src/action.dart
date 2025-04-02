@@ -8,7 +8,7 @@ abstract class Action {
 
   @override
   String toString() => '''Action ${DateTime.now()}
-  Type: $runtimeType.toString()
+  Type: $runtimeType
   Data: ${properties.join('\n\t')}''';
 }
 

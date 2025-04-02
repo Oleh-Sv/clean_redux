@@ -54,3 +54,11 @@
 
 - Added stack trace to FailureOrResult constructor 
 - Added generic state for failures
+
+## 0.3.10
+
+- Fixed mistake in Action toString()
+
+## 0.3.11
+
+- Enabled reset failure reducer

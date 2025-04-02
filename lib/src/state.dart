@@ -27,7 +27,8 @@ class FailuresState extends State<FailuresState> {
   FailuresState({
     required this.failures,
   }) : super(
-          FailuresState.updateFailure.reducer,
+          FailuresState.updateFailure.reducer +
+              FailuresState.resetFailure.reducer,
         );
 
   FailuresState.initial() : this(failures: {});
