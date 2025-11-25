@@ -138,5 +138,30 @@ void main() {
         expect(counter, 0);
       },
     );
+
+    test("Test FailuresState", () {
+      var failuresState = FailuresState.initial();
+
+      final failure = Failure(code: "test", message: "");
+      failuresState = failuresState.reducer(
+        failuresState,
+        FailedAction<TestUseCase>(failure),
+      );
+
+      expect(
+        failuresState.getFailure<TestUseCase>(),
+        equals(failure),
+      );
+
+      failuresState = failuresState.reducer(
+        failuresState,
+        ResetFailureAction<TestUseCase>(),
+      );
+
+      expect(
+        failuresState.getFailure<TestUseCase>(),
+        equals(null),
+      );
+    });
   });
 }

@@ -20,4 +20,19 @@ class Failure {
 
   @override
   int get hashCode => Object.hashAll([code, message]);
+
+  Failure copyWith({
+    String? code,
+    String? message,
+    FailureType? type,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? details,
+  }) =>
+      Failure(
+        code: code ?? this.code,
+        message: message ?? this.message,
+        type: type ?? this.type,
+        stackTrace: stackTrace ?? this.stackTrace,
+        details: details ?? this.details,
+      );
 }

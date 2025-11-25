@@ -22,18 +22,17 @@ abstract class State<T extends State<T>> {
 
 // Generic state to keep info about failures
 class FailuresState extends State<FailuresState> {
-  final Map<Type, Failure?> failures;
+  final Map<Type, Failure?> _failures;
 
-  FailuresState({
-    required this.failures,
-  }) : super(
+  FailuresState(this._failures)
+      : super(
           FailuresState.updateFailure.reducer +
               FailuresState.resetFailure.reducer,
         );
 
-  FailuresState.initial() : this(failures: {});
+  FailuresState.initial() : this({});
 
-  Failure? getFailure<T extends UseCase>() => failures[FailedAction<T>];
+  Failure? getFailure<T extends UseCase>() => _failures[T];
 
   factory FailuresState.updateFailure(
     FailuresState state,
@@ -41,8 +40,8 @@ class FailuresState extends State<FailuresState> {
   ) =>
       state.copyWith(
         failures: {
-          ...state.failures,
-          action.runtimeType: action.failure,
+          ...state._failures,
+          action.useCaseType: action.failure,
         },
       );
 
@@ -52,8 +51,8 @@ class FailuresState extends State<FailuresState> {
   ) =>
       state.copyWith(
         failures: {
-          ...state.failures,
-          action.runtimeType: null,
+          ...state._failures,
+          action.useCaseType: null,
         },
       );
 
@@ -61,7 +60,5 @@ class FailuresState extends State<FailuresState> {
   FailuresState copyWith({
     Map<Type, Failure?>? failures,
   }) =>
-      FailuresState(
-        failures: failures ?? this.failures,
-      );
+      FailuresState(failures ?? _failures);
 }

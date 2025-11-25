@@ -1,10 +1,12 @@
 import 'package:clean_redux/src/failure.dart';
 import 'package:clean_redux/src/use_case.dart';
 
-abstract class Action {
+abstract mixin class Action {
   const Action();
 
   final List<Object?> properties = const [];
+
+  bool get loggable => true;
 
   @override
   String toString() => '''Action ${DateTime.now()}
@@ -13,6 +15,8 @@ abstract class Action {
 }
 
 class FailedAction<T extends UseCase> extends Action {
+  Type get useCaseType => T;
+
   final Failure failure;
 
   FailedAction(this.failure);
@@ -22,5 +26,7 @@ class FailedAction<T extends UseCase> extends Action {
 }
 
 class ResetFailureAction<T extends UseCase> extends Action {
+  Type get useCaseType => T;
+
   const ResetFailureAction();
 }

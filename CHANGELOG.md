@@ -62,3 +62,19 @@
 ## 0.3.11
 
 - Enabled reset failure reducer
+
+## 0.3.12
+
+- Fixed reset of Failure
+
+## 0.3.13
+
+- Improved Failures State
+  
+## 0.3.14
+
+- Improved Failures State
+
+## 0.3.2
+
+- Added ability to mark action as loggable or not
