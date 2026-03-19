@@ -75,6 +75,10 @@
 
 - Improved Failures State
 
-## 0.3.2
+## 0.3.15
 
 - Added ability to mark action as loggable or not
+
+## 0.3.16
+
+- Implemented == for nullable to compare by "value" field
